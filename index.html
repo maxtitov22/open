@@ -8,7 +8,7 @@
 <meta name="description" content="Заём компании или облигации на ИИС-3: калькулятор подбирает варианты">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* ATON Minimal, один экран: ввод → экономия → сравнение → раскладка. Оранжевый — заём, фиолетовый — ИИС */
+/* Один экран: ввод → экономия → сравнение → раскладка. Оранжевый — заём, фиолетовый — ИИС */
 :root{
   --bg:#FFFFFF; --soft:#F7F6FB; --line:#E7E4F0; --ink:#17142A; --muted:#6E6886;
   --violet:#6C3FE3; --violet-2:#EFEAFE; --violet-ink:#4B22C0; --violet-3:#A88BF5;
@@ -145,12 +145,26 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .dots i{width:16px;height:10px;border-radius:3px;background:var(--line)}
 .dots i.on{background:var(--violet)} .dots i.fam{background:var(--violet-3)}
 .dots .sep{width:6px;background:none}
+/* суммы: заём и ИИС */
+.amt{font-weight:800;padding:1px 7px;border-radius:6px;white-space:nowrap}
+.amt.v{background:var(--violet);color:var(--on-accent)}
+.amt.o{background:var(--orange-2);color:var(--orange-ink);box-shadow:inset 0 0 0 1px var(--orange)}
+.put2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.put2 .t{border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.put2 .t span{font-size:13.5px;font-weight:600}
+.put2 .t b{font-size:clamp(24px,4.4vw,32px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.put2 .t small{font-size:12.5px;opacity:.85}
+.put2 .o{background:var(--orange-2);color:var(--orange-ink)}
+.put2 .v{background:var(--violet);color:var(--on-accent)}
+@media (max-width:420px){.put2{grid-template-columns:1fr}}
+.opt .put{font-size:14px;color:var(--violet-ink)}
+.opt .put b{font-weight:800}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:8px">
-    <span class="tag">Модельный расчёт · АТОН</span>
+    <span class="tag">Модельный расчёт</span>
     <h1>Сколько НДФЛ сэкономят облигации на ИИС-3</h1>
     <p class="muted">Введите четыре цифры — калькулятор подберёт, сколько оставить займом на жизнь, сколько счетов ИИС-3 пополнить и стоит ли подключать семью.</p>
   </header>
@@ -379,7 +393,7 @@ function update() {
   $("needHint").textContent = `Сейчас на руки: ${nf(net[0], 1)} млн в 2027, ${nf(net[2], 1)} — с 2029`;
   $("assumpLine").textContent = `КС ${st.kc.slice(0, 3).map(short).join(" → ")}% · реинвестиция ${RI ? "под КС " + (st.gap <= 0 ? "+ " + short(-st.gap) : "− " + short(st.gap)) + "%" : "выкл."}`;
   const O = options(ctx), one = O.one;
-  const ava = '<span class="ava" aria-hidden="true">А</span>';
+  const ava = '<span class="ava" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span>';
 
   if (!O.out.length) {
     $("say").innerHTML = `${ava}<div class="txt"><b>${one.shortfall ? "Процентов не хватит на жизнь даже со всей суммы." : "Вся сумма нужна на жизнь."}</b><span>${one.shortfall ? `Вся сумма займом даёт на руки ${nf(ENG.netOf(st.A * one.rMin, st.Y))} млн в год при ставке ${pf(one.rMin)}%, а нужно ${nf(st.need)}. ` : ""}На ИИС ничего не остаётся — схема не даст экономии. Уменьшите «Нужно на жизнь».</span></div>`;
@@ -389,13 +403,13 @@ function update() {
   // что говорит консультант
   const free = st.A - one.loanNeed, W = RI ? "выгода" : "экономия";
   let say;
-  if (one.excess < 0.01) say = `<b>Вам достаточно одного ИИС-3.</b><span>Займом оставьте ${nf(one.loan)} млн — этого хватит на жизнь. Остальные ${nf(one.iis)} млн помещаются на один счёт, деньги вернутся в декабре 2031 года. Откройте 3 счёта до 31.12.2026, пополните только первый.</span>`;
+  if (one.excess < 0.01) say = `<b>Вам достаточно одного ИИС-3.</b><span>Оставьте в займе <span class="amt o">${nf(one.loan)} млн</span> — этого хватит на жизнь. На ИИС положите <span class="amt v">${nf(one.iis)} млн</span> — всё помещается на один счёт, деньги вернутся в декабре 2031 года. Откройте 3 счёта до 31.12.2026, пополните только первый.</span>`;
   else {
     const tips = [];
     if (O.fam && O.out.some(o => o.id === "fam")) tips.push(`<b>добавьте ${O.fam.persons > 2 ? "двух членов" : "члена"} семьи</b> — ${W} ${nf(O.fam.win)} млн, деньги вернутся тоже в 2031 году`);
     const lg = O.out.filter(o => o.id === "y6" || o.id === "y7").pop();
     if (lg) tips.push(`<b>продлите срок</b> — ${W} ${nf(lg.v.win)} млн, но последний счёт закроется в ${lg.v.end} году`);
-    say = `<b>На один счёт помещается ${nf(one.iis)} млн из ${nf(free)}, которые можно убрать из займа.</b><span>Остальные ${nf(one.excess)} млн останутся займом и с них будет удерживаться НДФЛ. Чтобы сэкономить больше: ${tips.join("; или ")}.</span>`;
+    say = `<b>Один счёт ИИС вмещает ${nf(one.iis)} млн из ${nf(free)}, которые можно убрать из займа.</b><span>Самый простой вариант: на ИИС <span class="amt v">${nf(one.iis)} млн</span>, в займе <span class="amt o">${nf(one.loan)} млн</span> — из них ${nf(one.excess)} млн сверх лимита, с них удерживается НДФЛ. Чтобы сэкономить больше: ${tips.join("; или ")}.</span>`;
   }
   $("say").innerHTML = `${ava}<div class="txt">${say}</div>`;
   // карточки
@@ -403,7 +417,7 @@ function update() {
   if (!O.out.some(o => o.id === st.pick)) st.pick = rec;
   $("cards").innerHTML = O.out.map(o => `<button type="button" class="opt" role="radio" aria-checked="${o.id === st.pick}" tabindex="${o.id === st.pick ? 0 : -1}" data-pick="${o.id}">
       ${o.id === rec ? '<span class="rec">Рекомендуем</span>' : ""}<span class="kind">${o.kind}</span>
-      <span class="win">+${nf(o.v.win)} млн</span><span class="what">${accTxt(o.v)}</span>${dots(o.v)}
+      <span class="win">+${nf(o.v.win)} млн</span><span class="put">На ИИС: <b>${nf(o.v.iis)} млн</b></span><span class="what">${accTxt(o.v)}</span>${dots(o.v)}
       <span class="when">${o.v.accts.length > 1 && o.v.H > 5 ? "последний счёт — дек. " + o.v.end : "деньги вернутся в дек. " + o.v.end}</span></button>`).join("");
   save();
   const sel = O.out.find(o => o.id === st.pick), v = sel.v, period = `${YEARS[0]}–${v.end}`;
@@ -419,10 +433,12 @@ function update() {
   if (empty.length) lg += `<div class="lg"><span class="dot e"></span><span>ИИС ${empty.join(", ")}${v.persons > 1 ? " — у каждого" : ""}<small>открыть и не пополнять — резерв</small></span><b>0</b></div>`;
   $("res").innerHTML = `<div class="hero"><span class="cap">${sel.kind}: ${RI ? "выгода" : "экономия НДФЛ"} за ${period}</span><span class="big">+${nf(v.win)} млн ₽</span>
       ${RI ? `<span class="sub">НДФЛ меньше на ${nf(v.saved)} млн + ${nf(v.gain - v.saved)} млн дохода от реинвестиции сэкономленного налога</span>` : ""}</div>
+    <div class="put2"><div class="t o"><span>Оставить в займе</span><b>${nf(v.loan)} млн</b><small>на жизнь от ${nf(v.minCash)} млн в год</small></div>
+      <div class="t v"><span>Положить на ИИС</span><b>${nf(v.iis)} млн</b><small>${v.persons > 1 ? [0, 1, 2].map(j => { const s = v.accts.filter(a => a.j === j).reduce((t, a) => t + a.X, 0); return s > 0 ? (j ? "член семьи" + (v.persons > 2 ? " " + j : "") : "вы") + " " + nf(s) : ""; }).filter(Boolean).join(" · ") : v.accts.length + " " + plural(v.accts.length, "счёт", "счёта", "счетов")}</small></div></div>
     <div class="blk"><h3>НДФЛ с процентов за ${period}</h3>
       <div class="cmp-row"><span>Всё займом</span><div class="bar"><i class="o" style="width:100%"></i></div><span class="v">${nf(v.taxBase)}</span></div>
       <div class="cmp-row"><span>По плану</span><div class="bar"><i class="v" style="width:${(v.taxNew / mx * 100).toFixed(1)}%"></i></div><span class="v">${nf(v.taxNew)}</span></div></div>
-    <div class="blk"><h3>Как разложить ${nf(st.A)} млн</h3><div class="split" role="img" aria-label="Заём ${nf(v.loan)} млн, на ИИС ${nf(v.iis)} млн">${seg}</div><div class="legend">${lg}</div></div>
+    <div class="blk"><h3>По счетам: ${nf(st.A)} млн</h3><div class="split" role="img" aria-label="Заём ${nf(v.loan)} млн, на ИИС ${nf(v.iis)} млн">${seg}</div><div class="legend">${lg}</div></div>
     <p class="note">Все счета ИИС-3 нужно открыть до 31.12.2026: у открытых позже минимальный срок 6 лет и больше.${v.persons > 1 ? " Члену семьи деньги передаются дарением — между близкими родственниками без НДФЛ; у каждого свой лимит 30 млн." : ""}</p>`;
 
   // подробно
@@ -440,7 +456,7 @@ function update() {
     <h3>Условия</h3><ul class="plain note">
     <li>Деньги на ИИС-3 заблокированы до закрытия; досрочное закрытие лишает льготы. Не должно быть ИИС-1 и ИИС-2</li>
     <li>Счёт закрывается на оферте или погашении облигаций; брокер может потребовать квалификацию</li>
-    <li>Перед запуском — заключение налогового юриста</li></ul>`;
+    </ul>`;
 }
 fillInputs(); update();
 
