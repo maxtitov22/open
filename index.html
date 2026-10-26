@@ -72,7 +72,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hero .big{font-size:clamp(40px,7vw,58px);font-weight:800;line-height:1.05;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .hero .sub{font-size:14px;color:var(--muted)}
 .blk{display:flex;flex-direction:column;gap:10px}
-.cmp-row{display:grid;grid-template-columns:150px minmax(0,1fr) 92px;gap:12px;align-items:center;font-size:14px}
+.cmp-row{display:grid;grid-template-columns:230px minmax(0,1fr) 92px;gap:12px;align-items:center;font-size:14px}
 .cmp-row .v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
 .bar{height:22px;border-radius:6px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:6px}
@@ -149,16 +149,41 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .amt{font-weight:800;padding:1px 7px;border-radius:6px;white-space:nowrap}
 .amt.v{background:var(--violet);color:var(--on-accent)}
 .amt.o{background:var(--orange-2);color:var(--orange-ink);box-shadow:inset 0 0 0 1px var(--orange)}
-.put2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.put2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
 .put2 .t{border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .put2 .t span{font-size:13.5px;font-weight:600}
 .put2 .t b{font-size:clamp(24px,4.4vw,32px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
 .put2 .t small{font-size:12.5px;opacity:.85}
 .put2 .o{background:var(--orange-2);color:var(--orange-ink)}
 .put2 .v{background:var(--violet);color:var(--on-accent)}
-@media (max-width:420px){.put2{grid-template-columns:1fr}}
+@media (max-width:600px){.put2{grid-template-columns:1fr}}
 .opt .put{font-size:14px;color:var(--violet-ink)}
 .opt .put b{font-weight:800}
+.cmp-row.diff{border-top:1px solid var(--line);padding-top:8px;font-weight:700;color:var(--green)}
+@media (max-width:600px){.cmp-row.diff>span:nth-child(2){display:none}}
+/* плитка ИИС: положите → заберёте */
+.put2 .iis{gap:6px}
+.ibar{display:flex;height:14px;border-radius:5px;overflow:hidden;gap:2px;margin-top:4px}
+.ibar i{display:block;min-width:3px}
+.ibar .p,.ileg .p{background:rgba(255,255,255,.95)}
+.ibar .g,.ileg .g{background:#5FCB8D}
+.ileg{display:flex;flex-wrap:wrap;gap:4px 14px}
+.ileg span{display:inline-flex;align-items:center;gap:6px}
+.ileg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.iacc{font-family:var(--mono);font-size:12px!important;opacity:.9;line-height:1.5}
+.cmp-row.add{font-size:13.5px;color:var(--muted);padding-top:2px}
+.cmp-row.add+.cmp-row.diff,.cmp-row.diff+.cmp-row.add{border-top:0;padding-top:0}
+@media (max-width:600px){.cmp-row.add>span:nth-child(2){display:none}}
+/* инструкция: шаги и чек-лист */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:14px;line-height:1.35;background:var(--soft);border-radius:12px;padding:12px}
+.steps .sn{width:28px;height:28px;border-radius:50%;background:var(--violet);color:var(--on-accent);display:grid;place-items:center;font-weight:800;font-size:14px}
+@media (max-width:700px){.steps{grid-template-columns:1fr;gap:6px}.steps li{padding:10px 12px}}
+.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:t}
+.todo li{counter-increment:t;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px;line-height:1.45;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.todo li::before{content:counter(t);width:26px;height:26px;border-radius:8px;border:2px solid var(--violet);color:var(--violet-ink);display:grid;place-items:center;font-weight:800;font-size:13px}
+.todo b{font-weight:800;white-space:nowrap}
+.todo b.v{color:var(--violet-ink)} .todo b.o{color:var(--orange-ink)} .todo b.g{color:var(--green)}
 </style>
 </head>
 <body>
@@ -166,8 +191,14 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
   <header style="display:flex;flex-direction:column;gap:8px">
     <span class="tag">Модельный расчёт</span>
     <h1>Сколько НДФЛ сэкономят облигации на ИИС-3</h1>
-    <p class="muted">Введите четыре цифры — калькулятор подберёт, сколько оставить займом на жизнь, сколько счетов ИИС-3 пополнить и стоит ли подключать семью.</p>
+    <p class="muted">Часть займа остаётся на жизнь, остальное — в облигации компании на ИИС-3, где купоны без налога.</p>
   </header>
+
+  <ol class="steps" aria-label="Как пользоваться">
+    <li><span class="sn">1</span><span>Введите сумму займа, ставку, другой доход и сколько нужно на жизнь</span></li>
+    <li><span class="sn">2</span><span>Посмотрите варианты — оптимальный отмечен зелёным</span></li>
+    <li><span class="sn">3</span><span>Нажмите на вариант — увидите, сколько положить на ИИС, сколько заберёте и что сделать</span></li>
+  </ol>
 
   <section class="card" aria-label="Ваши данные">
     <div class="inputs">
@@ -197,7 +228,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
   <details class="box" id="dAssump">
     <summary>Допущения <small id="assumpLine"></small></summary>
     <div class="dbody">
-      <div class="field"><span class="lbl">Ключевая ставка, % — 2027–2028 по прогнозу ЦБ от 23.10.2026, с 2029 года — 9,5%</span><div class="kcgrid" id="kcgrid"></div></div>
+      <div class="field"><span class="lbl">Ключевая ставка в среднем за год, % — допущение: 2027 по прогнозу ЦБ от 23.10.2026, далее 11 → 10 → 9,5%</span><div class="kcgrid" id="kcgrid"></div></div>
       <div class="inputs">
         <div class="field"><span class="lbl">Тип ставки займа</span>
           <div class="seg two" role="radiogroup" aria-label="Тип ставки"><label><input type="radio" name="rateMode" value="kc">КС + надбавка</label><label><input type="radio" name="rateMode" value="fix">Фиксированная</label></div></div>
@@ -329,8 +360,8 @@ const pf = x => { const v = Math.round(x * 1e4) / 100; return v.toLocaleString("
 const short = x => String(+(+x).toFixed(2)).replace(".", ",");
 const parse = s => { const v = parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); return isFinite(v) ? v : NaN; };
 const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; };
-const KEY = "iis9calc";
-const DEF = { A: 100, rateMode: "kc", spread: 3, fix: 17, per: 1, Y: 20, need: 6, pick: "", kc: [13, 9.5, 9.5, 9.5, 9.5, 9.5, 9.5], reinvOn: true, gap: -1 };
+const KEY = "iis10calc";
+const DEF = { A: 100, rateMode: "kc", spread: 3, fix: 17, per: 1, Y: 5, need: 3.6, pick: "", kc: [13, 11, 10, 9.5, 9.5, 9.5, 9.5], reinvOn: true, gap: -1 };
 const YEARS = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
 const WHO = ["вы", "член семьи 1", "член семьи 2"];
 let st = JSON.parse(JSON.stringify(DEF));
@@ -416,7 +447,7 @@ function update() {
   const rec = one.excess < 0.01 ? "one" : O.out.some(o => o.id === "fam") ? "fam" : "one";
   if (!O.out.some(o => o.id === st.pick)) st.pick = rec;
   $("cards").innerHTML = O.out.map(o => `<button type="button" class="opt" role="radio" aria-checked="${o.id === st.pick}" tabindex="${o.id === st.pick ? 0 : -1}" data-pick="${o.id}">
-      ${o.id === rec ? '<span class="rec">Рекомендуем</span>' : ""}<span class="kind">${o.kind}</span>
+      ${o.id === rec ? '<span class="rec">Оптимально</span>' : ""}<span class="kind">${o.kind}</span>
       <span class="win">+${nf(o.v.win)} млн</span><span class="put">На ИИС: <b>${nf(o.v.iis)} млн</b></span><span class="what">${accTxt(o.v)}</span>${dots(o.v)}
       <span class="when">${o.v.accts.length > 1 && o.v.H > 5 ? "последний счёт — дек. " + o.v.end : "деньги вернутся в дек. " + o.v.end}</span></button>`).join("");
   save();
@@ -425,21 +456,37 @@ function update() {
   // выбранный вариант
   const mx = Math.max(v.taxBase, 1e-9);
   const seg = [`<div class="o" style="flex:${v.loan}">${v.loan / st.A > .14 ? "Заём" : ""}</div>`]
-    .concat(v.accts.map(a => `<div class="${a.j ? "v2" : "v"}" style="flex:${a.X}">${a.X / st.A > .12 ? "ИИС №" + (a.k + 1) : ""}</div>`)).join("");
+    .concat(v.accts.map(a => `<div class="${a.j ? "v2" : "v"}" style="flex:${a.X}">${a.X / st.A > .12 ? "ИИС №" + (a.k + 1) + (a.j ? " · семья" + (v.persons > 2 ? " " + a.j : "") : "") : ""}</div>`)).join("");
   let lg = `<div class="lg"><span class="dot o"></span><span>Заём компании<small>на руки от ${nf(v.minCash)} млн в год · нужно ${nf(st.need)}</small></span><b>${nf(v.loan)} млн</b></div>`;
-  for (const a of v.accts) { const o = v.out.find(x => x.j === a.j && x.k === a.k);
-    lg += `<div class="lg"><span class="dot ${a.j ? "v2" : "v"}"></span><span>ИИС №${a.k + 1}${a.j ? " · " + WHO[a.j] : ""}<small>${a.j ? "подарить, " : ""}закрыть в декабре ${o.year} → получить ${nf(o.out)} млн</small></span><b>${nf(a.X)} млн</b></div>`; }
   const empty = [0, 1, 2].filter(k => !v.accts.some(a => a.j === 0 && a.k === k)).map(k => "№" + (k + 1));
   if (empty.length) lg += `<div class="lg"><span class="dot e"></span><span>ИИС ${empty.join(", ")}${v.persons > 1 ? " — у каждого" : ""}<small>открыть и не пополнять — резерв</small></span><b>0</b></div>`;
+  const outSum = v.out.reduce((s, o) => s + o.out, 0), incSum = outSum - v.iis, taxSum = v.out.reduce((s, o) => s + o.tax, 0);
+  // что сделать — чек-лист из выбранного варианта
+  const fam = [1, 2].map(j => ({ j, s: v.accts.filter(a => a.j === j).reduce((t, a) => t + a.X, 0) })).filter(x => x.s > 0);
+  const famName = j => v.persons > 2 ? WHO[j] : "члену семьи";
+  const closeYears = [...new Set(v.out.map(o => o.year))];
+  const accN = a => v.persons > 1 ? (a.j ? `счёт №${a.k + 1} ${v.persons > 2 ? "члена семьи " + a.j : "члена семьи"}` : `ваш счёт №${a.k + 1}`) : `счёт №${a.k + 1}`;
+  const todoItems = [
+    `До <b>31 декабря 2026</b> откройте у брокера 3 счёта ИИС-3${v.persons > 1 ? " — себе и " + (v.persons > 2 ? "каждому члену семьи" : "члену семьи") : ""}. Пополнять все не нужно`,
+    ...fam.map(f => `Подарите ${famName(f.j)} <b>${nf(f.s)} млн</b> — между близкими родственниками без НДФЛ`),
+    `В займе компании оставьте <b class="o">${nf(v.loan)} млн</b> — ${v.excess > 0.01 ? `из них ${nf(v.loanNeed)} на жизнь, ${nf(v.excess)} не поместились в лимит ИИС` : "с них проценты на жизнь"}`,
+    `На ИИС купите облигации компании на <b class="v">${nf(v.iis)} млн</b>: ${v.accts.map(a => `${accN(a)} — ${nf(a.X)} млн`).join(", ")}. Купоны не выводите — они копятся на счёте`,
+    ...closeYears.map(y => { const os = v.out.filter(o => o.year === y); return `В декабре ${y} закройте ${os.map(accN).join(" и ")} и заберите <b class="g">${nf(os.reduce((s, o) => s + o.out, 0))} млн</b> без НДФЛ`; }),
+  ];
+  const todo = `<div class="blk"><h3>Что сделать</h3><ol class="todo">${todoItems.map(t => `<li><span>${t}</span></li>`).join("")}</ol></div>`;
   $("res").innerHTML = `<div class="hero"><span class="cap">${sel.kind}: ${RI ? "выгода" : "экономия НДФЛ"} за ${period}</span><span class="big">+${nf(v.win)} млн ₽</span>
-      ${RI ? `<span class="sub">НДФЛ меньше на ${nf(v.saved)} млн + ${nf(v.gain - v.saved)} млн дохода от реинвестиции сэкономленного налога</span>` : ""}</div>
+      </div>
     <div class="put2"><div class="t o"><span>Оставить в займе</span><b>${nf(v.loan)} млн</b><small>на жизнь от ${nf(v.minCash)} млн в год</small></div>
-      <div class="t v"><span>Положить на ИИС</span><b>${nf(v.iis)} млн</b><small>${v.persons > 1 ? [0, 1, 2].map(j => { const s = v.accts.filter(a => a.j === j).reduce((t, a) => t + a.X, 0); return s > 0 ? (j ? "член семьи" + (v.persons > 2 ? " " + j : "") : "вы") + " " + nf(s) : ""; }).filter(Boolean).join(" · ") : v.accts.length + " " + plural(v.accts.length, "счёт", "счёта", "счетов")}</small></div></div>
-    <div class="blk"><h3>НДФЛ с процентов за ${period}</h3>
-      <div class="cmp-row"><span>Всё займом</span><div class="bar"><i class="o" style="width:100%"></i></div><span class="v">${nf(v.taxBase)}</span></div>
-      <div class="cmp-row"><span>По плану</span><div class="bar"><i class="v" style="width:${(v.taxNew / mx * 100).toFixed(1)}%"></i></div><span class="v">${nf(v.taxNew)}</span></div></div>
+      <div class="t v iis"><span>На ИИС: положите → заберёте</span><b>${nf(v.iis)} → ${nf(outSum)} млн</b>
+        <div class="ibar" aria-hidden="true"><i class="p" style="flex:${v.iis}"></i><i class="g" style="flex:${Math.max(incSum, 0)}"></i></div>
+        <small class="ileg"><span><i class="p"></i>вложено ${nf(v.iis)}</span><span><i class="g"></i>доход ${nf(incSum)} — ${taxSum > 0.005 ? "после НДФЛ" : "без НДФЛ"}</span></small>
+        <small class="iacc">${v.out.map(o => `№${o.k + 1}${o.j ? " · " + (v.persons > 2 ? WHO[o.j] : "член семьи") : ""}: ${nf(o.X)} → ${nf(o.out)} (дек. ${o.year})`).join("<br>")}</small></div></div>
+    <div class="blk"><h3>Сколько НДФЛ заплатите за ${period}, млн ₽</h3>
+      <div class="cmp-row"><span>Если всё оставить в займе</span><div class="bar"><i class="o" style="width:100%"></i></div><span class="v">${nf(v.taxBase)}</span></div>
+      <div class="cmp-row"><span>С ИИС — выбранный вариант</span><div class="bar"><i class="v" style="width:${(v.taxNew / mx * 100).toFixed(1)}%"></i></div><span class="v">${nf(v.taxNew)}</span></div>
+      <div class="cmp-row diff"><span>Разница — экономия НДФЛ</span><span></span><span class="v">${nf(v.saved)}</span></div>${RI ? `<div class="cmp-row add"><span>+ доход от реинвестиции сэкономленного налога</span><span></span><span class="v">${nf(v.gain - v.saved)}</span></div><div class="cmp-row diff"><span>= выгода</span><span></span><span class="v">${nf(v.gain)}</span></div>` : ""}</div>
     <div class="blk"><h3>По счетам: ${nf(st.A)} млн</h3><div class="split" role="img" aria-label="Заём ${nf(v.loan)} млн, на ИИС ${nf(v.iis)} млн">${seg}</div><div class="legend">${lg}</div></div>
-    <p class="note">Все счета ИИС-3 нужно открыть до 31.12.2026: у открытых позже минимальный срок 6 лет и больше.${v.persons > 1 ? " Члену семьи деньги передаются дарением — между близкими родственниками без НДФЛ; у каждого свой лимит 30 млн." : ""}</p>`;
+    ${todo}`;
 
   // подробно
   let yr = "";
